@@ -81,3 +81,24 @@ graph TD
     M --> N[Display Rotated Image];
     N --> O[Download Image];
 ```
+
+## Comparison of Approaches
+
+Based on the chat history, here is a comparison of the different image orientation correction approaches discussed:
+
+| Method | Pros | Cons | Best For |
+| --- | --- | --- | --- |
+| **Tesseract OSD** | Simple to implement, uses a well-established OCR engine. | Can be inaccurate for images with no text or non-standard fonts. | Images with clear, horizontal text. |
+| **CV2 Histogram** | Fast and effective for documents with clear text blocks. | Less effective for images with complex layouts or non-uniform text. | Scanned documents with uniform text blocks. |
+| **Deskew Package** | A dedicated library for skew correction, easy to use. | May not handle large rotation angles. | Correcting minor skew in scanned documents. |
+| **Edge Detection + Hough Transform** | Good for finding the dominant angle of a document. | Can be sensitive to noise and non-document edges. | Scanned documents with clear edges. |
+| **EAST Text Detector + Hough Transform** | A powerful deep learning method that can detect text at various angles. | Requires a pre-trained model, can be computationally expensive. | Images with text at various angles and orientations. |
+| **Simulated Annealing** | A global optimization method that can find the optimal orientation. | Can be slow and requires a well-defined objective function. | Complex cases where other methods fail. |
+
+### Recommendation
+
+For a general-purpose image orientation correction system, the **EAST Text Detector + Hough Transform** method is the most promising approach. It is robust and can handle a wide variety of images with text at different angles.
+
+For scanned documents with minor skew, the **Deskew Package** or the **CV2 Histogram** method can be a good choice due to their speed and simplicity.
+
+For a more advanced system, a combination of methods could be used. For example, the system could first try a fast method like the CV2 Histogram, and if the confidence is low, it could fall back to the EAST Text Detector.
