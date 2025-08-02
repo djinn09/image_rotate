@@ -13,6 +13,7 @@ This Streamlit application provides a user-friendly interface to correct the ori
 - **Evaluation Metrics**: Allows the user to evaluate the performance of the models using metrics such as Accuracy, Mean Absolute Error (MAE), and Root Mean Squared Error (RMSE).
 - **Real-time Adaptation**: Allows the user to provide feedback on the corrected image to update the ensemble model in real-time.
 - **Reinforcement Learning**: Uses a trained reinforcement learning agent to predict the orientation of an image.
+- **Hyperparameter Optimization**: Uses grid search to find the optimal hyperparameters for the reinforcement learning agent.
 
 ## Installation
 
@@ -64,6 +65,7 @@ The application is structured into several modules:
   - `ensemble_rotator.py`: Ensemble learning-based rotation.
   - `rl_env.py`: A simple reinforcement learning environment.
   - `train_rl_agent.py`: A script for training the reinforcement learning agent.
+  - `optimize_rl_agent.py`: A script for optimizing the hyperparameters of the reinforcement learning agent.
 
 Here is a diagram illustrating the code flow:
 
