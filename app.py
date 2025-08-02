@@ -6,6 +6,7 @@ import streamlit as st
 from PIL import Image
 
 from src.evaluation import calculate_accuracy, calculate_mae, calculate_rmse
+from src.realtime_adaptation import update_ensemble_weights
 from src.rotators.deskew_rotator import align_by_deskew
 from src.rotators.east_hough_rotator import rotate_by_east_hough
 from src.rotators.ensemble_rotator import ensemble_rotation
@@ -88,6 +89,10 @@ if uploaded_image is not None:
             mime=mime,
         )
 
+        # Initialize session state for ensemble weights
+        if "ensemble_weights" not in st.session_state:
+            st.session_state.ensemble_weights = np.array([1.0, 1.0, 1.0]) / 3.0
+
         # --- Evaluation Section ---
         st.write("---")
         st.header("Evaluation")
@@ -134,7 +139,9 @@ if uploaded_image is not None:
             st.write(f"- Accuracy: {east_hough_accuracy}")
 
             # Ensemble
-            _, ensemble_angle = ensemble_rotation(image_cv)
+            rotated_img, ensemble_angle, individual_angles = ensemble_rotation(
+                image_cv, st.session_state.ensemble_weights
+            )
             predicted_angles.append(ensemble_angle)
             ensemble_accuracy = calculate_accuracy(ensemble_angle, ground_truth_angle)
             st.write(f"**Ensemble**")
@@ -149,6 +156,26 @@ if uploaded_image is not None:
             st.write(f"**Overall Metrics:**")
             st.write(f"- MAE: {mae:.2f} degrees")
             st.write(f"- RMSE: {rmse:.2f} degrees")
+
+        # --- Real-time Adaptation Section ---
+        st.write("---")
+        st.header("Real-time Adaptation")
+        st.write(
+            "Provide feedback on the corrected image to update the ensemble model."
+        )
+        corrected_angle = st.number_input(
+            "Enter the corrected angle (in degrees):", value=0.0
+        )
+        if st.button("Update Ensemble Model"):
+            _, _, individual_angles = ensemble_rotation(
+                image_cv, st.session_state.ensemble_weights
+            )
+            st.session_state.ensemble_weights = update_ensemble_weights(
+                st.session_state.ensemble_weights, individual_angles, corrected_angle
+            )
+            st.success("Ensemble model updated successfully!")
+            st.write("New ensemble weights:")
+            st.write(st.session_state.ensemble_weights)
 
     except Exception as e:
         st.error(f"An error occurred: {e}")

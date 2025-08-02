@@ -6,7 +6,7 @@ from src.rotators.tesseract_rotator import ImageRotate
 from src.utils import rotate_image_cv2
 
 
-def ensemble_rotation(image):
+def ensemble_rotation(image, weights):
     """
     Combines the predictions from multiple models to determine the rotation angle.
     """
@@ -16,11 +16,11 @@ def ensemble_rotation(image):
     _, histogram_angle = align_image(image)
     _, deskew_angle = align_by_deskew(image)
 
-    # Combine the predictions using the median
-    angles = [tesseract_angle, histogram_angle, deskew_angle]
-    median_angle = np.median(angles)
+    # Combine the predictions using the weighted average
+    angles = np.array([tesseract_angle, histogram_angle, deskew_angle])
+    weighted_angle = np.average(angles, weights=weights)
 
-    # Rotate the image by the median angle
-    rotated_image = rotate_image_cv2(image, median_angle)
+    # Rotate the image by the weighted angle
+    rotated_image = rotate_image_cv2(image, weighted_angle)
 
-    return rotated_image, median_angle
+    return rotated_image, weighted_angle, angles

@@ -11,6 +11,7 @@ This Streamlit application provides a user-friendly interface to correct the ori
 - **EAST Text Detector + Hough Transform**: A deep learning method to find text boxes and determine the rotation angle.
 - **Ensemble Learning**: Combines the predictions from multiple models to create a more robust and accurate orientation correction system.
 - **Evaluation Metrics**: Allows the user to evaluate the performance of the models using metrics such as Accuracy, Mean Absolute Error (MAE), and Root Mean Squared Error (RMSE).
+- **Real-time Adaptation**: Allows the user to provide feedback on the corrected image to update the ensemble model in real-time.
 
 ## Installation
 
