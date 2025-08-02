@@ -5,6 +5,7 @@ import numpy as np
 import streamlit as st
 from PIL import Image
 
+from src.evaluation import calculate_accuracy, calculate_mae, calculate_rmse
 from src.rotators.deskew_rotator import align_by_deskew
 from src.rotators.east_hough_rotator import rotate_by_east_hough
 from src.rotators.ensemble_rotator import ensemble_rotation
@@ -51,7 +52,7 @@ if uploaded_image is not None:
                 rotated_img = img_rotator.rotate_image(image_cv, angle)
                 st.write(f"Tesseract detected rotation angle: {angle} degrees")
             elif method == "cv2-histogram":
-                rotated_img, angle = align_image(.image_cv)
+                rotated_img, angle = align_image(image_cv)
                 st.write(f"Histogram-based rotation angle: {angle} degrees")
             elif method == "deskew":
                 rotated_img, angle = align_by_deskew(image_cv)
@@ -86,5 +87,68 @@ if uploaded_image is not None:
             file_name=f"rotated_image.{format.lower()}",
             mime=mime,
         )
+
+        # --- Evaluation Section ---
+        st.write("---")
+        st.header("Evaluation")
+        st.write(
+            "Note: The MAE and RMSE metrics are calculated based on the single image uploaded above."
+        )
+        ground_truth_angle = st.number_input(
+            "Enter the ground truth angle (in degrees):", value=0.0
+        )
+        if st.button("Evaluate All Models"):
+            st.write("**Evaluation Results:**")
+            predicted_angles = []
+            ground_truth_angles = [ground_truth_angle]
+
+            # Tesseract
+            img_rotator = ImageRotate()
+            tesseract_angle = img_rotator.rotate_by_pytesseract(image_cv)
+            predicted_angles.append(tesseract_angle)
+            tesseract_accuracy = calculate_accuracy(tesseract_angle, ground_truth_angle)
+            st.write(f"**Tesseract**")
+            st.write(f"- Accuracy: {tesseract_accuracy}")
+
+            # Histogram
+            _, histogram_angle = align_image(image_cv)
+            predicted_angles.append(histogram_angle)
+            histogram_accuracy = calculate_accuracy(histogram_angle, ground_truth_angle)
+            st.write(f"**Histogram**")
+            st.write(f"- Accuracy: {histogram_accuracy}")
+
+            # Deskew
+            _, deskew_angle = align_by_deskew(image_cv)
+            predicted_angles.append(deskew_angle)
+            deskew_accuracy = calculate_accuracy(deskew_angle, ground_truth_angle)
+            st.write(f"**Deskew**")
+            st.write(f"- Accuracy: {deskew_accuracy}")
+
+            # EAST + Hough
+            east_hough_angle, _ = rotate_by_east_hough(image_cv)
+            predicted_angles.append(east_hough_angle)
+            east_hough_accuracy = calculate_accuracy(
+                east_hough_angle, ground_truth_angle
+            )
+            st.write(f"**EAST + Hough**")
+            st.write(f"- Accuracy: {east_hough_accuracy}")
+
+            # Ensemble
+            _, ensemble_angle = ensemble_rotation(image_cv)
+            predicted_angles.append(ensemble_angle)
+            ensemble_accuracy = calculate_accuracy(ensemble_angle, ground_truth_angle)
+            st.write(f"**Ensemble**")
+            st.write(f"- Accuracy: {ensemble_accuracy}")
+
+            # Calculate and display MAE and RMSE
+            mae = calculate_mae(np.array(predicted_angles), np.array(ground_truth_angles))
+            rmse = calculate_rmse(
+                np.array(predicted_angles), np.array(ground_truth_angles)
+            )
+            st.write("---")
+            st.write(f"**Overall Metrics:**")
+            st.write(f"- MAE: {mae:.2f} degrees")
+            st.write(f"- RMSE: {rmse:.2f} degrees")
+
     except Exception as e:
         st.error(f"An error occurred: {e}")
