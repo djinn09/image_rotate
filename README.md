@@ -12,6 +12,7 @@ This Streamlit application provides a user-friendly interface to correct the ori
 - **Ensemble Learning**: Combines the predictions from multiple models to create a more robust and accurate orientation correction system.
 - **Evaluation Metrics**: Allows the user to evaluate the performance of the models using metrics such as Accuracy, Mean Absolute Error (MAE), and Root Mean Squared Error (RMSE).
 - **Real-time Adaptation**: Allows the user to provide feedback on the corrected image to update the ensemble model in real-time.
+- **Reinforcement Learning**: Uses a trained reinforcement learning agent to predict the orientation of an image.
 
 ## Installation
 
@@ -61,6 +62,8 @@ The application is structured into several modules:
   - `deskew_rotator.py`: Deskew package-based rotation.
   - `east_hough_rotator.py`: EAST text detector and Hough transform-based rotation.
   - `ensemble_rotator.py`: Ensemble learning-based rotation.
+  - `rl_env.py`: A simple reinforcement learning environment.
+  - `train_rl_agent.py`: A script for training the reinforcement learning agent.
 
 Here is a diagram illustrating the code flow:
 
@@ -73,11 +76,14 @@ graph TD
     C --> F[Deskew];
     C --> G[EAST + Hough];
     C --> P[Ensemble];
+    C --> R[Reinforcement Learning];
     D --> H[src/rotators/tesseract_rotator.py];
     E --> I[src/rotators/histogram_rotator.py];
     F --> J[src/rotators/deskew_rotator.py];
     G --> K[src/rotators/east_hough_rotator.py];
     P --> Q[src/rotators/ensemble_rotator.py];
+    R --> S[src/rl_env.py];
+    R --> T[src/train_rl_agent.py];
     I --> L[src/utils.py];
     K --> L;
     Q --> H;
@@ -88,6 +94,7 @@ graph TD
     J --> M;
     K --> M;
     Q --> M;
+    S --> M;
     M --> N[Display Rotated Image];
     N --> O[Download Image];
 ```
