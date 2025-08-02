@@ -1,11 +1,12 @@
 import cv2
+import imutils
 import pytesseract
 from pytesseract import Output
-import imutils
+
 
 class ImageRotate:
     def rotate_by_pytesseract(self, image) -> float:
-        """Detects image orientation using Tesseract OCR and returns the rotation angle."""
+        """Detects image orientation using Tesseract OCR."""
         rgb = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
         results = pytesseract.image_to_osd(rgb, output_type=Output.DICT)
         rotation_angle = results["rotate"]

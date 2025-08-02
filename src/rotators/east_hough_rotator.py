@@ -1,17 +1,23 @@
 import cv2
 import numpy as np
 import streamlit as st
+
 from src.utils import rotate_image_cv2
 
+
 def rotate_by_east_hough(image, east_model_path="frozen_east_text_detection.pb"):
-    """Detects text orientation using EAST model and Hough Transform, returning the rotation angle."""
+    """Detects text orientation using EAST model and Hough Transform."""
     try:
         # Load EAST model
         net = cv2.dnn.readNet(east_model_path)
         # Prepare image for EAST
-        blob = cv2.dnn.blobFromImage(image, 1.0, (320, 320), (123.68, 116.78, 103.94), swapRB=True, crop=False)
+        blob = cv2.dnn.blobFromImage(
+            image, 1.0, (320, 320), (123.68, 116.78, 103.94), swapRB=True, crop=False
+        )
         net.setInput(blob)
-        scores, geometry = net.forward(["feature_fusion/Conv_7/Sigmoid", "feature_fusion/concat_3"])
+        scores, geometry = net.forward(
+            ["feature_fusion/Conv_7/Sigmoid", "feature_fusion/concat_3"]
+        )
 
         # Decode EAST output to get bounding boxes
         (numRows, numCols) = scores.shape[2:4]

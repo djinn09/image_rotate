@@ -1,14 +1,14 @@
-import streamlit as st
-import cv2
-import numpy as np
-from PIL import Image
 import io
 
-from src.rotators.tesseract_rotator import ImageRotate
-from src.rotators.histogram_rotator import align_image
+import cv2
+import numpy as np
+import streamlit as st
+from PIL import Image
+
 from src.rotators.deskew_rotator import align_by_deskew
 from src.rotators.east_hough_rotator import rotate_by_east_hough
-from src.utils import rotate_image_cv2
+from src.rotators.histogram_rotator import align_image
+from src.rotators.tesseract_rotator import ImageRotate
 
 # Set page config to wide layout
 st.set_page_config(layout="wide")
@@ -23,7 +23,11 @@ st.write("- **deskew**: Corrects skew using the deskew library.")
 st.write("- **east-hough**: Combines EAST text detection with Hough Transform.")
 
 uploaded_image = st.file_uploader("Choose an image...", type=["jpg", "jpeg", "png"])
-method = st.radio("Select Rotation Method:", ("cv2-histogram", "tesseract", "deskew", "east-hough"), horizontal=True)
+method = st.radio(
+    "Select Rotation Method:",
+    ("cv2-histogram", "tesseract", "deskew", "east-hough"),
+    horizontal=True,
+)
 
 if uploaded_image is not None:
     try:
@@ -75,7 +79,7 @@ if uploaded_image is not None:
             label=f"Download rotated image as {format}",
             data=byte_im,
             file_name=f"rotated_image.{format.lower()}",
-            mime=mime
+            mime=mime,
         )
     except Exception as e:
         st.error(f"An error occurred: {e}")

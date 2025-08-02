@@ -1,6 +1,7 @@
 import cv2
 import numpy as np
 
+
 def rotate_image_cv2(image, angle):
     """Rotates an image by a given angle using OpenCV."""
     mean_pixel = np.median(np.median(image, axis=0), axis=0)

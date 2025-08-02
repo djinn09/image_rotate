@@ -18,12 +18,25 @@ This Streamlit application provides a user-friendly interface to correct the ori
    cd image-rotation-deskew-tool
    ```
 
-2. Install the required dependencies:
+2. Create a virtual environment and install the dependencies using `uv`:
    ```bash
-   pip install -r requirements.txt
+   uv venv
+   uv pip install -r requirements.txt
    ```
 
 3. For the EAST method, you need to download the pre-trained model file `frozen_east_text_detection.pb` and place it in the root directory of the project.
+
+## Development
+
+This project uses `ruff` for linting and formatting, and `pre-commit` to run checks before each commit.
+
+To set up the development environment, install the pre-commit hooks:
+
+```bash
+pre-commit install
+```
+
+Now, `ruff` will automatically check and format your code every time you make a commit.
 
 ## How to Run
 
