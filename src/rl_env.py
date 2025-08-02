@@ -5,15 +5,14 @@ import numpy as np
 class OrientationEnv(gym.Env):
     """A simple environment for teaching an RL agent to correct image orientation."""
 
-    def __init__(self, true_angle=0):
+    def __init__(self, image, true_angle):
         super(OrientationEnv, self).__init__()
+        self.image = image
         self.true_angle = true_angle
         # Define a discrete action space: 360 actions, one for each degree
         self.action_space = spaces.Discrete(360)
-        # Define the observation space: the current angle of the image
-        self.observation_space = spaces.Box(low=0, high=359, shape=(1,), dtype=np.float32)
-        # Initialize the current angle
-        self.current_angle = 0
+        # Define the observation space: the image itself
+        self.observation_space = spaces.Box(low=0, high=255, shape=image.shape, dtype=np.uint8)
 
     def step(self, action):
         """
@@ -29,8 +28,8 @@ class OrientationEnv(gym.Env):
         done = True
         # There is no additional info to return
         info = {}
-        # The observation is the true angle
-        observation = np.array([self.true_angle], dtype=np.float32)
+        # The observation is the image
+        observation = self.image
         return observation, reward, done, False, info
 
     def reset(self, seed=None, options=None):
@@ -38,8 +37,8 @@ class OrientationEnv(gym.Env):
         Reset the environment to its initial state.
         """
         super().reset(seed=seed)
-        # We don't need to do anything here, as the state is always the same
-        return np.array([self.true_angle], dtype=np.float32), {}
+        # Return the initial observation
+        return self.image, {}
 
     def render(self, mode='human'):
         """

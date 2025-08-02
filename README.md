@@ -14,6 +14,7 @@ This Streamlit application provides a user-friendly interface to correct the ori
 - **Real-time Adaptation**: Allows the user to provide feedback on the corrected image to update the ensemble model in real-time.
 - **Reinforcement Learning**: Uses a trained reinforcement learning agent to predict the orientation of an image.
 - **Hyperparameter Optimization**: Uses grid search to find the optimal hyperparameters for the reinforcement learning agent.
+- **Data Augmentation**: Applies transformations like rotation, scaling, and noise addition to the training data to make the model more robust.
 
 ## Installation
 
@@ -66,6 +67,7 @@ The application is structured into several modules:
   - `rl_env.py`: A simple reinforcement learning environment.
   - `train_rl_agent.py`: A script for training the reinforcement learning agent.
   - `optimize_rl_agent.py`: A script for optimizing the hyperparameters of the reinforcement learning agent.
+  - `data_augmentation.py`: A module for applying data augmentation to the images.
 
 Here is a diagram illustrating the code flow:
 

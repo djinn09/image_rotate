@@ -1,7 +1,9 @@
+import cv2
 import gymnasium as gym
 import numpy as np
 from src.rl_env import OrientationEnv
 from src.optimize_rl_agent import grid_search
+from src.data_augmentation import augment_image
 
 def train_agent():
     """
@@ -13,17 +15,21 @@ def train_agent():
     gamma = best_params["gamma"]
     epsilon = best_params["epsilon"]
 
-    # Create the environment
-    env = OrientationEnv()
+    # Load the training image
+    image = cv2.imread("training_image.png")
 
     # Create the Q-table
-    q_table = np.zeros([env.observation_space.shape[0], env.action_space.n])
+    q_table = np.zeros([360, 360])  # 360 possible true angles, 360 possible actions
 
     # Hyperparameters
     num_episodes = 1000
 
     # Training loop
     for i in range(num_episodes):
+        # Augment the image and get the true angle
+        augmented_image, true_angle = augment_image(image)
+        # Create the environment
+        env = OrientationEnv(augmented_image, true_angle)
         state, _ = env.reset()
         done = False
         while not done:
@@ -31,16 +37,16 @@ def train_agent():
             if np.random.uniform(0, 1) < epsilon:
                 action = env.action_space.sample()  # Explore
             else:
-                action = np.argmax(q_table[0])  # Exploit
+                action = np.argmax(q_table[int(true_angle)])  # Exploit
 
             # Take the action
             next_state, reward, done, _, _ = env.step(action)
 
             # Update the Q-table
-            old_value = q_table[0, action]
-            next_max = np.max(q_table[0])
+            old_value = q_table[int(true_angle), action]
+            next_max = np.max(q_table[int(true_angle)])
             new_value = (1 - alpha) * old_value + alpha * (reward + gamma * next_max)
-            q_table[0, action] = new_value
+            q_table[int(true_angle), action] = new_value
 
     # Save the trained Q-table
     np.save("q_table.npy", q_table)
