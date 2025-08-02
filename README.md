@@ -9,6 +9,7 @@ This Streamlit application provides a user-friendly interface to correct the ori
 - **Deskew Package Method**: A dedicated library for skew correction.
 - **Edge Detection + Hough Transform**: Finds the document's dominant angle via edge detection.
 - **EAST Text Detector + Hough Transform**: A deep learning method to find text boxes and determine the rotation angle.
+- **Ensemble Learning**: Combines the predictions from multiple models to create a more robust and accurate orientation correction system.
 
 ## Installation
 
@@ -57,6 +58,7 @@ The application is structured into several modules:
   - `histogram_rotator.py`: CV2 Histogram-based rotation.
   - `deskew_rotator.py`: Deskew package-based rotation.
   - `east_hough_rotator.py`: EAST text detector and Hough transform-based rotation.
+  - `ensemble_rotator.py`: Ensemble learning-based rotation.
 
 Here is a diagram illustrating the code flow:
 
@@ -68,16 +70,22 @@ graph TD
     C --> E[CV2 Histogram];
     C --> F[Deskew];
     C --> G[EAST + Hough];
+    C --> P[Ensemble];
     D --> H[src/rotators/tesseract_rotator.py];
     E --> I[src/rotators/histogram_rotator.py];
     F --> J[src/rotators/deskew_rotator.py];
     G --> K[src/rotators/east_hough_rotator.py];
+    P --> Q[src/rotators/ensemble_rotator.py];
     I --> L[src/utils.py];
     K --> L;
+    Q --> H;
+    Q --> I;
+    Q --> J;
     H --> M{Rotated Image};
     I --> M;
     J --> M;
     K --> M;
+    Q --> M;
     M --> N[Display Rotated Image];
     N --> O[Download Image];
 ```

@@ -7,6 +7,7 @@ from PIL import Image
 
 from src.rotators.deskew_rotator import align_by_deskew
 from src.rotators.east_hough_rotator import rotate_by_east_hough
+from src.rotators.ensemble_rotator import ensemble_rotation
 from src.rotators.histogram_rotator import align_image
 from src.rotators.tesseract_rotator import ImageRotate
 
@@ -21,11 +22,12 @@ st.write("- **cv2-histogram**: Analyzes histogram sharpness to align the image."
 st.write("- **tesseract**: Uses Tesseract OCR to detect orientation.")
 st.write("- **deskew**: Corrects skew using the deskew library.")
 st.write("- **east-hough**: Combines EAST text detection with Hough Transform.")
+st.write("- **ensemble**: Combines the predictions from multiple models.")
 
 uploaded_image = st.file_uploader("Choose an image...", type=["jpg", "jpeg", "png"])
 method = st.radio(
     "Select Rotation Method:",
-    ("cv2-histogram", "tesseract", "deskew", "east-hough"),
+    ("cv2-histogram", "tesseract", "deskew", "east-hough", "ensemble"),
     horizontal=True,
 )
 
@@ -49,7 +51,7 @@ if uploaded_image is not None:
                 rotated_img = img_rotator.rotate_image(image_cv, angle)
                 st.write(f"Tesseract detected rotation angle: {angle} degrees")
             elif method == "cv2-histogram":
-                rotated_img, angle = align_image(image_cv)
+                rotated_img, angle = align_image(.image_cv)
                 st.write(f"Histogram-based rotation angle: {angle} degrees")
             elif method == "deskew":
                 rotated_img, angle = align_by_deskew(image_cv)
@@ -57,6 +59,9 @@ if uploaded_image is not None:
             elif method == "east-hough":
                 angle, rotated_img = rotate_by_east_hough(image_cv)
                 st.write(f"EAST + Hough detected rotation angle: {angle} degrees")
+            elif method == "ensemble":
+                rotated_img, angle = ensemble_rotation(image_cv)
+                st.write(f"Ensemble detected rotation angle: {angle} degrees")
             else:
                 st.error("Invalid method selected.")
                 st.stop()
